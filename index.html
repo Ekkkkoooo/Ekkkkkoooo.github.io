@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Hero</title>
+    <style>
+        h2{
+            text-align: center;
+        }
+        #imageContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .imageRow:not(:first-child) {
+            margin-top: 50px; 
+        }
+        .colorLabel {
+            display: inline-block;
+            width: 30px;
+            height: 100%;
+            margin-right: 10px;
+        }
+        .blue {
+            background-color: #2928e1;
+        }
+        .red {
+            background-color: #ff003f;
+        }
+        .imageRow {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 5px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            transition: 2s;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50; 
+            color: white;
+            cursor: pointer;
+            margin: 10px 100px 30px
+        }
+        button:hover {
+            background-color: #45a049; 
+        }
+    </style>
+</head>
+<body>
+<h2>Select the number of players for the game:</h2>
+<div class="button-container">
+    <button onclick="displayImages(6)">3v3</button>
+    <button onclick="displayImages(8)">4v4</button>
+    <button onclick="displayImages(10)">5v5</button>
+</div>
+<div id="imageContainer"></div>
+<script>
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function displayImages(imagesPerRow) {
+        const imageContainer = document.getElementById('imageContainer');
+        imageContainer.innerHTML = '';
+        const totalImages = imagesPerRow * 4; 
+        const maxImages = 167;
+        if (totalImages > maxImages) {
+            alert('Cannot display more images than available!');
+            return;
+        }
+        const usedImages = new Set(); 
+        const imgDir = 'imgs/'; 
+        for (let row = 0; row < 2; row++) {
+            const rowElement = document.createElement('div');
+            rowElement.classList.add('imageRow');
+            const colorLabel = document.createElement('div');
+            colorLabel.classList.add('colorLabel');
+            if (row === 0) {
+                colorLabel.classList.add('blue');
+            } else {
+                colorLabel.classList.add('red');
+            }
+            rowElement.appendChild(colorLabel);
+
+            for (let col = 0; col < imagesPerRow; col++) {
+                let imageIndex;
+                do {
+                    imageIndex = getRandomInt(1, maxImages);
+                } while (usedImages.has(imageIndex)); 
+
+                usedImages.add(imageIndex);
+
+                const imgElement = document.createElement('img');
+                imgElement.src = imgDir + imageIndex + '.png'; 
+                rowElement.appendChild(imgElement);
+            }
+            imageContainer.appendChild(rowElement);
+        }
+    }
+</script>
+</body>
+</html>
