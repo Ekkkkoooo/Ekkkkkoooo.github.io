@@ -1,114 +1,722 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Hero</title>
+    <title>英雄联盟内战随机选择器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        h2{
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Beaufort for LOL', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        @font-face {
+            font-family: 'Beaufort for LOL';
+            src: url('https://fonts.cdnfonts.com/css/beaufort-for-lol');
+        }
+        
+        body {
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(9, 20, 37, 0.8) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(37, 19, 9, 0.8) 0%, transparent 40%),
+                linear-gradient(135deg, #0a1428 0%, #091428 50%, #0a1428 100%);
+            color: #cdbe91;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                url('https://lolstatic-a.akamaihd.net/frontpage/apps/prod/harbinger-l10-website/zh-cn/production/zh-cn/static/observer-mode-icon-red-dc8c0317c00339b29fecf6e8c42a0ddb.svg') no-repeat 10% 20% / 200px,
+                url('https://lolstatic-a.akamaihd.net/frontpage/apps/prod/harbinger-l10-website/zh-cn/production/zh-cn/static/observer-mode-icon-blue-053ef6b8e440a1b0f7b4a6b0f7f3a3f3.svg') no-repeat 90% 80% / 200px;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
             text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            position: relative;
         }
-        #imageContainer {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-        }
-        .imageRow:not(:first-child) {
-            margin-top: 50px; 
-        }
-        .colorLabel {
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #c8aa6e, #f0e6d2, #c8aa6e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(200, 170, 110, 0.5);
+            letter-spacing: 3px;
+            position: relative;
             display: inline-block;
-            width: 30px;
-            height: 100%;
-            margin-right: 10px;
+            padding: 0 20px;
         }
-        .blue {
-            background-color: #2928e1;
-        }
-        .red {
-            background-color: #ff003f;
-        }
-        .imageRow {
+        
+        .subtitle-container {
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            color: #a09b8c;
+            text-align: center;
+            white-space: nowrap;
             width: 100%;
-            justify-content: center;
         }
-        img {
-            max-width: 100%;
-            height: auto;
-            margin: 5px;
+        
+        .game-controls {
+            background: 
+                linear-gradient(145deg, rgba(16, 23, 38, 0.9), rgba(10, 15, 26, 0.9)),
+                url('https://lolstatic-a.akamaihd.net/frontpage/apps/prod/harbinger-l10-website/zh-cn/production/zh-cn/static/hextech-texture-7a56f38908a95a9a2c8c7f6e73c7f6e7.png');
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(200, 170, 110, 0.2);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .game-controls::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c8aa6e, transparent);
+        }
+        
+        .game-controls h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            color: #f0e6d2;
+            text-shadow: 0 0 5px rgba(200, 170, 110, 0.5);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .game-controls h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 10%;
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c8aa6e, transparent);
+        }
+        
         .button-container {
             display: flex;
             justify-content: center;
-            margin-top: 20px;
-            transition: 2s;
+            gap: 20px;
+            flex-wrap: wrap;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
+        
+        .mode-btn {
+            padding: 15px 25px;
+            font-size: 1.1rem;
             border: none;
-            border-radius: 4px;
-            background-color: #4CAF50; 
-            color: white;
+            border-radius: 8px;
+            background: linear-gradient(145deg, #1e2328, #1e282d);
+            color: #cdbe91;
             cursor: pointer;
-            margin: 10px 100px 30px
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 5px 15px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            min-width: 100px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #463714;
         }
-        button:hover {
-            background-color: #45a049; 
+        
+        .mode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(200, 170, 110, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .mode-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.7),
+                0 0 15px rgba(200, 170, 110, 0.3);
+            color: #f0e6d2;
+        }
+        
+        .mode-btn:hover::before {
+            left: 100%;
+        }
+        
+        .mode-btn:active {
+            transform: translateY(-2px);
+        }
+        
+        /* 1v1 按钮样式 - 调整后的紫色主题 */
+        .mode-btn.purple-team {
+            background: linear-gradient(145deg, #1a0a28, #2a0a3c);
+            border: 1px solid #4a0a82;
+            box-shadow: 
+                0 5px 15px rgba(74, 10, 130, 0.3),
+                inset 0 1px 0 rgba(90, 30, 150, 0.1);
+        }
+        
+        .mode-btn.purple-team:hover {
+            box-shadow: 
+                0 8px 20px rgba(74, 10, 130, 0.5),
+                0 0 15px rgba(100, 40, 170, 0.4);
+        }
+        
+        /* 2v2 按钮样式 - 调整后的绿色主题 */
+        .mode-btn.green-team {
+            background: linear-gradient(145deg, #0a1e14, #0a2a1e);
+            border: 1px solid #0a5a28;
+            box-shadow: 
+                0 5px 15px rgba(10, 90, 40, 0.3),
+                inset 0 1px 0 rgba(20, 120, 60, 0.1);
+        }
+        
+        .mode-btn.green-team:hover {
+            box-shadow: 
+                0 8px 20px rgba(10, 90, 40, 0.5),
+                0 0 15px rgba(30, 140, 80, 0.4);
+        }
+        
+        /* 3v3 按钮样式 - 蓝色主题 */
+        .mode-btn.blue-team {
+            background: linear-gradient(145deg, #0a1428, #0a1e3c);
+            border: 1px solid #005a82;
+            box-shadow: 
+                0 5px 15px rgba(0, 90, 130, 0.3),
+                inset 0 1px 0 rgba(100, 180, 255, 0.1);
+        }
+        
+        .mode-btn.blue-team:hover {
+            box-shadow: 
+                0 8px 20px rgba(0, 90, 130, 0.5),
+                0 0 15px rgba(0, 150, 255, 0.4);
+        }
+        
+        /* 4v4 按钮样式 - 调整后的金色主题 */
+        .mode-btn.gold-team {
+            background: linear-gradient(145deg, #281a0a, #3c240a);
+            border: 1px solid #825a0a;
+            box-shadow: 
+                0 5px 15px rgba(130, 90, 10, 0.3),
+                inset 0 1px 0 rgba(170, 130, 30, 0.1);
+        }
+        
+        .mode-btn.gold-team:hover {
+            box-shadow: 
+                0 8px 20px rgba(130, 90, 10, 0.5),
+                0 0 15px rgba(200, 150, 40, 0.4);
+        }
+        
+        /* 5v5 按钮样式 - 红色主题 */
+        .mode-btn.red-team {
+            background: linear-gradient(145deg, #280a14, #3c0a1e);
+            border: 1px solid #820a28;
+            box-shadow: 
+                0 5px 15px rgba(130, 10, 40, 0.3),
+                inset 0 1px 0 rgba(255, 100, 130, 0.1);
+        }
+        
+        .mode-btn.red-team:hover {
+            box-shadow: 
+                0 8px 20px rgba(130, 10, 40, 0.5),
+                0 0 15px rgba(255, 50, 100, 0.4);
+        }
+        
+        .teams-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .team {
+            background: 
+                linear-gradient(145deg, rgba(16, 23, 38, 0.9), rgba(10, 15, 26, 0.9)),
+                url('https://lolstatic-a.akamaihd.net/frontpage/apps/prod/harbinger-l10-website/zh-cn/production/zh-cn/static/hextech-texture-7a56f38908a95a9a2c8c7f6e73c7f6e7.png');
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(200, 170, 110, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .team::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c8aa6e, transparent);
+        }
+        
+        .team-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(200, 170, 110, 0.2);
+            position: relative;
+        }
+        
+        .team-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, #c8aa6e, transparent);
+        }
+        
+        .team-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 15px;
+            box-shadow: 0 0 10px currentColor;
+            position: relative;
+        }
+        
+        .team-color::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, currentColor, transparent 80%);
+            z-index: -1;
+            animation: rotate 3s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .blue {
+            background: linear-gradient(145deg, #0a8cbf, #005a82);
+            color: #0a8cbf;
+        }
+        
+        .red {
+            background: linear-gradient(145deg, #bf0a3c, #820a28);
+            color: #bf0a3c;
+        }
+        
+        .team-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #f0e6d2;
+        }
+        
+        .image-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+        }
+        
+        .hero-card {
+            background: linear-gradient(145deg, #1e2328, #1e282d);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #463714;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(145deg, rgba(200, 170, 110, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .hero-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 10px 25px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(200, 170, 110, 0.3);
+            border-color: #c8aa6e;
+        }
+        
+        .hero-card:hover::before {
+            opacity: 1;
+        }
+        
+        .hero-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s;
+        }
+        
+        .hero-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 40px;
+            font-size: 1.5rem;
+            color: #c8aa6e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .loading i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            opacity: 0.7;
+        }
+        
+        .empty-state p {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #a09b8c;
+        }
+        
+        .empty-state .icon {
+            width: 200px;
+            height: 200px;
+            margin: -70px auto 0px;
+            opacity: 0.5;
+            background-image: url('imgs/icon.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 25px 20px;
+            opacity: 0.7;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(200, 170, 110, 0.2);
+            position: relative;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c8aa6e, transparent);
+        }
+        
+        @media (max-width: 768px) {
+            .image-container {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+            
+            .hero-card img {
+                height: 170px;
+            }
+            
+            .mode-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+                min-width: 90px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .game-controls, .team {
+                padding: 20px;
+            }
+            
+            .empty-state .icon {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .subtitle {
+                white-space: normal;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .button-container {
+                gap: 15px;
+            }
+            
+            .mode-btn {
+                width: 45%;
+                min-width: auto;
+            }
+            
+            .image-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .team-name {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-<h2>Select the number of players for the game:</h2>
-<div class="button-container">
-    <button onclick="displayImages(6)">3v3</button>
-    <button onclick="displayImages(8)">4v4</button>
-    <button onclick="displayImages(10)">5v5</button>
-</div>
-<div id="imageContainer"></div>
-<script>
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    function displayImages(imagesPerRow) {
-        const imageContainer = document.getElementById('imageContainer');
-        imageContainer.innerHTML = '';
-        const totalImages = imagesPerRow * 4; 
-        const maxImages = 167;
-        if (totalImages > maxImages) {
-            alert('Cannot display more images than available!');
-            return;
+    <div class="container">
+        <header>
+            <h1>英雄联盟内战随机英雄</h1>
+            <div class="subtitle-container">
+                <p class="subtitle">为您的游戏内战生成随机英雄。</p>
+                <p class="subtitle">选择内战人数，获得带有随机英雄的平衡队伍，体验真正的召唤师峡谷/嚎哭深渊对决！</p>
+            </div>
+        </header>
+        
+        <div class="game-controls">
+            <h2>选择内战人数</h2>
+            <div class="button-container">
+                <button class="mode-btn purple-team" onclick="displayImages(1)">
+                    <i class="fas fa-user"></i> 1v1
+                </button>
+                <button class="mode-btn green-team" onclick="displayImages(2)">
+                    <i class="fas fa-user-friends"></i> 2v2
+                </button>
+                <button class="mode-btn blue-team" onclick="displayImages(3)">
+                    <i class="fas fa-users"></i> 3v3
+                </button>
+                <button class="mode-btn gold-team" onclick="displayImages(4)">
+                    <i class="fas fa-shield-alt"></i> 4v4
+                </button>
+                <button class="mode-btn red-team" onclick="displayImages(5)">
+                    <i class="fas fa-fist-raised"></i> 5v5
+                </button>
+            </div>
+        </div>
+        
+        <div class="teams-container" id="teamsContainer">
+            <div class="empty-state">
+                <div class="icon"></div>
+                <p>选择一个内战人数以生成队伍</p>
+                <p>红蓝方阵容将在这里显示，包含随机分配的英雄</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>英雄联盟内战随机选择器 &copy; 2025 | Designed by EKØ</p>
+            <p>用户支持与产品使用建议请通过微信联系：Eko-WeChat</p>
+        </footer>
+    </div>
+
+    <script>
+        // 生成指定范围内的随机整数
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
-        const usedImages = new Set(); 
-        const imgDir = 'imgs/'; 
-        for (let row = 0; row < 2; row++) {
-            const rowElement = document.createElement('div');
-            rowElement.classList.add('imageRow');
-            const colorLabel = document.createElement('div');
-            colorLabel.classList.add('colorLabel');
-            if (row === 0) {
-                colorLabel.classList.add('blue');
-            } else {
-                colorLabel.classList.add('red');
-            }
-            rowElement.appendChild(colorLabel);
-
-            for (let col = 0; col < imagesPerRow; col++) {
-                let imageIndex;
-                do {
-                    imageIndex = getRandomInt(1, maxImages);
-                } while (usedImages.has(imageIndex)); 
-
-                usedImages.add(imageIndex);
-
-                const imgElement = document.createElement('img');
-                imgElement.src = imgDir + imageIndex + '.png'; 
-                rowElement.appendChild(imgElement);
-            }
-            imageContainer.appendChild(rowElement);
+        
+        // 显示图片函数 - 参数heroesPerTeam表示每队英雄数量
+        function displayImages(heroesPerTeam) {
+            const teamsContainer = document.getElementById('teamsContainer');
+            teamsContainer.innerHTML = '';
+            
+            // 显示加载状态
+            const loadingElement = document.createElement('div');
+            loadingElement.classList.add('loading');
+            loadingElement.innerHTML = `
+                <i class="fas fa-spinner"></i>
+                正在召唤英雄...
+            `;
+            teamsContainer.appendChild(loadingElement);
+            
+            // 设置延迟以模拟加载过程，提升用户体验
+            setTimeout(() => {
+                teamsContainer.innerHTML = '';
+                
+                // 重要：当您向imgs文件夹添加新图片时，需要更新这个值
+                // 例如：如果您添加了图片168.png到200.png，请将maxImages改为200
+                const maxImages = 171;
+                const usedImages = new Set(); // 用于避免重复选择同一张图片
+                const imgDir = 'imgs/'; // 图片文件夹路径
+                
+                // 创建红队
+                const redTeam = document.createElement('div');
+                redTeam.classList.add('team');
+                
+                const redTeamHeader = document.createElement('div');
+                redTeamHeader.classList.add('team-header');
+                
+                const redColor = document.createElement('div');
+                redColor.classList.add('team-color', 'red');
+                
+                const redName = document.createElement('div');
+                redName.classList.add('team-name');
+                redName.textContent = '红色方'; // 移除了图标
+                
+                redTeamHeader.appendChild(redColor);
+                redTeamHeader.appendChild(redName);
+                redTeam.appendChild(redTeamHeader);
+                
+                const redImageContainer = document.createElement('div');
+                redImageContainer.classList.add('image-container');
+                
+                // 创建蓝队
+                const blueTeam = document.createElement('div');
+                blueTeam.classList.add('team');
+                
+                const blueTeamHeader = document.createElement('div');
+                blueTeamHeader.classList.add('team-header');
+                
+                const blueColor = document.createElement('div');
+                blueColor.classList.add('team-color', 'blue');
+                
+                const blueName = document.createElement('div');
+                blueName.classList.add('team-name');
+                blueName.textContent = '蓝色方'; // 移除了图标
+                
+                blueTeamHeader.appendChild(blueColor);
+                blueTeamHeader.appendChild(blueName);
+                blueTeam.appendChild(blueTeamHeader);
+                
+                const blueImageContainer = document.createElement('div');
+                blueImageContainer.classList.add('image-container');
+                
+                // 生成红队英雄
+                for (let i = 0; i < heroesPerTeam; i++) {
+                    let imageIndex;
+                    // 循环直到找到未使用的图片索引
+                    do {
+                        imageIndex = getRandomInt(1, maxImages);
+                    } while (usedImages.has(imageIndex));
+                    
+                    usedImages.add(imageIndex);
+                    
+                    const heroCard = document.createElement('div');
+                    heroCard.classList.add('hero-card');
+                    
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imgDir + imageIndex + '.png';
+                    imgElement.alt = '英雄 ' + imageIndex;
+                    
+                    // 添加图片加载错误的处理
+                    imgElement.onerror = function() {
+                        // 当图片不存在时，显示一个SVG占位符
+                        this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4=';
+                        this.alt = '图片未找到';
+                    };
+                    
+                    heroCard.appendChild(imgElement);
+                    redImageContainer.appendChild(heroCard);
+                }
+                
+                // 生成蓝队英雄
+                for (let i = 0; i < heroesPerTeam; i++) {
+                    let imageIndex;
+                    // 循环直到找到未使用的图片索引
+                    do {
+                        imageIndex = getRandomInt(1, maxImages);
+                    } while (usedImages.has(imageIndex));
+                    
+                    usedImages.add(imageIndex);
+                    
+                    const heroCard = document.createElement('div');
+                    heroCard.classList.add('hero-card');
+                    
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imgDir + imageIndex + '.png';
+                    imgElement.alt = '英雄 ' + imageIndex;
+                    
+                    // 添加图片加载错误的处理
+                    imgElement.onerror = function() {
+                        // 当图片不存在时，显示一个SVG占位符
+                        this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4=';
+                        this.alt = '图片未找到';
+                    };
+                    
+                    heroCard.appendChild(imgElement);
+                    blueImageContainer.appendChild(heroCard);
+                }
+                
+                redTeam.appendChild(redImageContainer);
+                blueTeam.appendChild(blueImageContainer);
+                
+                // 先添加红队，再添加蓝队
+                teamsContainer.appendChild(redTeam);
+                teamsContainer.appendChild(blueTeam);
+            }, 1000); // 1000毫秒的延迟，模拟加载过程
         }
-    }
-</script>
+    </script>
 </body>
 </html>
